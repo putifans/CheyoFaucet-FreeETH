@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const cookieParser = require('cookie-parser');
+const { URLSearchParams } = require('url'); // Necesario para el formato del captcha
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
@@ -38,15 +39,19 @@ app.post('/claim', async (req, res) => {
     }
 
     try {
-        // 1. Verificar hCaptcha
-        const verify = await axios.post(`https://hcaptcha.com/siteverify`, null, {
-            params: {
-                secret: HCAPTCHA_SECRET,
-                response: hCaptchaResponse
-            }
+        // 1. Verificar hCaptcha (Formato corregido)
+        const params = new URLSearchParams();
+        params.append('secret', HCAPTCHA_SECRET);
+        params.append('response', hCaptchaResponse);
+
+        const verify = await axios.post('https://hcaptcha.com/siteverify', params, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         });
 
-        if (!verify.data.success) return res.status(400).send("Error en el Captcha.");
+        if (!verify.data.success) {
+            console.log("Error detallado hCaptcha:", verify.data['error-codes']);
+            return res.status(400).send("Error en el Captcha.");
+        }
 
         // 2. Enviar pago a FaucetPay
         const response = await axios.post('https://faucetpay.io/api/v1/send', {
