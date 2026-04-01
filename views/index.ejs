@@ -19,8 +19,6 @@
     </style>
 </head>
 <body>
-    <script>(function(s){s.dataset.zone='10273227',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
     <div class="container">
         <div class="card">
             <div>
@@ -55,14 +53,11 @@
 
         <form action="/claim" method="POST" id="faucet-form">
             <input type="email" name="email" placeholder="Correo de FaucetPay" required>
-            
             <div class="h-captcha" data-sitekey="<%= sitekey %>"></div>
             <br>
             <button type="submit" class="btn-claim" id="claim-button" disabled>Esperando...</button>
         </form>
     </div>
-
-    <script>(function(s){s.dataset.zone='10273232',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <script>
         let timeLeft = 10;
@@ -72,12 +67,13 @@
 
         const timer = setInterval(() => {
             timeLeft--;
-            secDisplay.innerText = timeLeft;
+            if (timeLeft >= 0) {
+                secDisplay.innerText = timeLeft;
+            }
             if (timeLeft <= 0) {
                 clearInterval(timer);
                 btn.disabled = false;
                 btn.innerText = "Collect your reward";
-                secDisplay.innerText = "0";
                 statusText.innerText = "Ready";
             }
         }, 1000);
